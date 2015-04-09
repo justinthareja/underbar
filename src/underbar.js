@@ -85,7 +85,7 @@
   _.filter = function(collection, test) {
     var result = [];
 
-    _.each(collection, function (element) {
+    _.each(collection, function (element, index) {
         if (test(element)) {
           result.push(element);
         } 
@@ -104,12 +104,49 @@
   };
 
   // Produce a duplicate-free version of the array.
-  _.uniq = function(array) {
+  _.uniq = function (array) {
+
+    var result = [];
+
+    _.each(array, function (element, index) {
+      if (_.indexOf(array, element) === index) {
+        result.push(element);
+      }
+    })
+
+    return result;
+
+    // for some reason index remains undefined when running this solution. why?
+    // return _.filter(array, function (element, index) {
+    //   return _.indexOf(array, element) === index;
+    // });
+
   };
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
+
+    var toBeAdded,
+        result = [];
+
+    if (Array.isArray(collection)) {
+      for (var i = 0; i < collection.length; i++) {
+        toBeAdded = iterator(collection[i], i, collection);
+        result.push(toBeAdded);
+      }
+    }
+    else if (typeof collection === 'object') {
+      for (var key in collection) {
+        toBeAdded = iterator(collection[key], key, collection);
+        result.push(toBeAdded);
+      }      
+    }
+
+    return result;
+    
+
+
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
