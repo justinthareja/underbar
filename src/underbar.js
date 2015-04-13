@@ -72,8 +72,8 @@
     // it uses the iteration helper `each`, which you will need to write.
     var result = -1;
 
-    _.each(array, function (item, index) {
-      if (item === target && result === -1) {
+    _.each(array, function (element, index) {
+      if (element === target && result === -1) {
         result = index;
       }
     });
@@ -116,37 +116,28 @@
 
     return result;
 
-    // for some reason index remains undefined when running this solution. why?
-    // return _.filter(array, function (element, index) {
-    //   return _.indexOf(array, element) === index;
-    // });
-
   };
-
+  // _.uniq = function (array) {
+  //   // why is index undefined within the _.filter call? in the first solution index 
+  //   // equals the expected order within the _.each call
+  //   return _.filter(array, function (element, index) {
+  //     console.log(index);
+  //     return _.indexOf(array, element) === index;
+  //   });
+  // };
+  
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
 
-    var toBeAdded,
-        result = [];
+    var result = [];
 
-    if (Array.isArray(collection)) {
-      for (var i = 0; i < collection.length; i++) {
-        toBeAdded = iterator(collection[i], i, collection);
-        result.push(toBeAdded);
-      }
-    }
-    else if (typeof collection === 'object') {
-      for (var key in collection) {
-        toBeAdded = iterator(collection[key], key, collection);
-        result.push(toBeAdded);
-      }      
-    }
+    _.each(collection, function (element, index) {
+      result[index] = iterator(element);
+    })
 
     return result;
     
-
-
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
