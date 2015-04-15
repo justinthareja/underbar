@@ -266,8 +266,6 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    // inspect all arguments
-    // iterate over each object to add the property to the passed in obj
     var args = [].slice.call(arguments, 1);
 
     for (var i = 0; i < args.length; i++) {
@@ -295,7 +293,6 @@
     // extend obj with remaining properties in args
     return _.extend.apply(null, args);
     ***/
-
     var args = [].slice.call(arguments, 1);
 
     for (var i = 0; i < args.length; i++) {
@@ -349,6 +346,24 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    // create an object to store results
+    var memory = {};
+    var result;
+    // return an anonymous function
+    return function (primitiveArgument) {
+      // within the returned function check to see if arguments[0] in memory
+      if(primitiveArgument in memory) {
+        // if it is, result = memory[arguments[0]]
+        result = memory[primitiveArgument];  
+      }
+      else {
+        // if not, run the function and store in memory as argument[0] : result
+        result = func.apply(null, arguments)
+        memory[primitiveArgument] = result; 
+      }
+      // return result  
+      return result;    
+    }
   };
 
   // Delays a function for the given number of milliseconds, and then calls
