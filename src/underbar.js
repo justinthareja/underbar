@@ -349,17 +349,17 @@
     // create an object to store results
     var memory = {};
     var result;
-    // return an anonymous function
-    return function (primitiveArgument) {
+    // return an anonymous function to handle the memory check
+    return function (arg) {
       // within the returned function check to see if arguments[0] in memory
-      if(primitiveArgument in memory) {
+      if(arg in memory) {
         // if it is, result = memory[arguments[0]]
-        result = memory[primitiveArgument];  
+        result = memory[arg];  
       }
       else {
         // if not, run the function and store in memory as argument[0] : result
         result = func.apply(null, arguments)
-        memory[primitiveArgument] = result; 
+        memory[arg] = result; 
       }
       // return result  
       return result;    
@@ -373,6 +373,7 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    setTimeout.apply(null, arguments);
   };
 
 
@@ -387,6 +388,17 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var result = array.slice();
+    var randomIndex, storage; 
+
+    for (var i = 0; i < result.length; i++) {
+      randomIndex = Math.floor(Math.random()) * (result.length - 1);
+      storage = result[i];
+      result[i] = result[randomIndex];
+      result[randomIndex] = storage;
+    }
+
+    return result;    
   };
 
 
