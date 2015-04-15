@@ -82,17 +82,30 @@
   };
 
   // Return all elements of an array that pass a truth test.
-  _.filter = function(collection, test) {
+  _.filter = function(collection, test) {  
     var result = [];
-
-    _.each(collection, function (element, index) {
-        if (test(element)) {
-          result.push(element);
-        } 
-      });
-
+    // _.each(collection, function (element, index) {
+    //     if (test(element)) {
+    //       result.push(element);
+    //     } 
+    //   });
+    if (Array.isArray(collection)) {
+      for (var i = 0; i < collection.length; i++) {
+        if (test(collection[i], i, collection)) {
+          result.push(collection[i]);
+        }
+      }
+    }
+    else if (typeof collection === 'object') {
+      for (var key in collection) {
+        if (test(collection[key], key, collection)) {
+          result.push(collection[key]);
+        }      
+      }
+    }
     return result;
   };
+
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
@@ -105,7 +118,6 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function (array) {
-
     var result = [];
 
     _.each(array, function (element, index) {
@@ -113,9 +125,7 @@
         result.push(element);
       }
     })
-
     return result;
-
   };
   // _.uniq = function (array) {
   //   // why is index undefined within the _.filter call? in the first solution index 
@@ -129,15 +139,13 @@
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
-
     var result = [];
 
     _.each(collection, function (element, index) {
       result[index] = iterator(element);
     })
 
-    return result;
-    
+    return result;  
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
@@ -181,8 +189,7 @@
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
-  _.reduce = function(collection, iterator, accumulator) {
-    
+  _.reduce = function(collection, iterator, accumulator) { 
     var result;
     accumulator != undefined ? result = accumulator : result = collection.shift();
 
@@ -210,7 +217,6 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
-
     if(iterator === undefined) {
       iterator = Boolean;
     }
@@ -228,17 +234,18 @@
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
     if(iterator === undefined) {
-      iterator = Boolean;
+      iterator = _.identity;
     }
-
-    return _.reduce(collection, function(passedTest, element) {
-      if(passedTest) {
-        return true;
-      }
-      return Boolean(iterator(element));
-    }, false)
-  };
-
+    // return _.reduce(collection, function(passedTest, element) {
+    //   if(passedTest) {
+    //     return true;
+    //   }
+    //   return Boolean(iterator(element));
+    // }, false)  
+      return !_.every(collection, function(element) {
+        return !iterator(element);
+      })
+    };
 
   /**
    * OBJECTS
@@ -259,11 +266,46 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    // inspect all arguments
+    // iterate over each object to add the property to the passed in obj
+    var args = [].slice.call(arguments, 1);
+
+    for (var i = 0; i < args.length; i++) {
+      for (var key in args[i]) {
+        obj[key] = args[i][key];
+      }
+    }
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    /***
+    // dump all to be added objects into var args
+    var args = [].slice.call(arguments, 1);
+    // filter duplicated properties out of args
+    _.each(args, function (newProperties, index) {
+      passedArgs.push(_.filter(newProperties, function (property, key) {
+        // need a truth test to match the keys in this object with original obj
+        return !(key in obj);
+      }))  
+    });
+    args.unshift(obj);
+    // extend obj with remaining properties in args
+    return _.extend.apply(null, args);
+    ***/
+
+    var args = [].slice.call(arguments, 1);
+
+    for (var i = 0; i < args.length; i++) {
+      for (var key in args[i]) {
+        if (!(key in obj)) {
+          obj[key] = args[i][key];
+        }
+      }
+    }
+    return obj;
   };
 
 
@@ -385,4 +427,10 @@
   // Note: This is difficult! It may take a while to implement.
   _.throttle = function(func, wait) {
   };
+
+  _.test = function () {
+    var args = [].slice.call(arguments, 1);
+    console.log(args);
+  };
+
 }());
