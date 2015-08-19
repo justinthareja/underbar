@@ -460,6 +460,24 @@
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    var args = [].slice.call(arguments);
+    // convert all arrays to objects for constant time lookup
+    var objArgs = _.map(args, function(array) {
+      return _.reduce(array, function(memo, item) {
+        memo[item] = true;
+        return memo;
+      }, {});
+    });
+    // reduce array of objects to one object containing all values that intersect
+    var sharedKeys = _.reduce(objArgs, function(memo, obj) {
+      _.each(memo, function(value, key) {
+        if (key in obj === false) { delete memo[key]; }
+      });
+      return memo;
+    });
+    
+    // return keys
+    return Object.keys(sharedKeys);
   };
 
   // Take the difference between one array and a number of other arrays.
