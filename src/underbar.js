@@ -140,11 +140,9 @@
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
     var result = [];
-
     _.each(collection, function (element, index) {
-      result[index] = iterator(element);
-    })
-
+      result[index] = iterator(element, index);
+    });
     return result;  
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
@@ -389,7 +387,7 @@
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
     var result = array.slice();
-    var randomIndex, storage; 
+    var randomIndex, storage;
 
     for (var i = 0; i < result.length; i++) {
       randomIndex = Math.floor(Math.random()) * (result.length - 1);
@@ -398,7 +396,7 @@
       result[randomIndex] = storage;
     }
 
-    return result;    
+    return result;
   };
 
 
@@ -412,20 +410,9 @@
 
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
-
-
   _.invoke = function(collection, functionOrKey, args) {
-    // _.each(collection, function(value, key, col) {
-    //   if (typeof functionOrKey === 'string') {
-    //     col[key] = value[functionOrKey].apply(value, args);
-    //   } else {
-    //     col[key] = functionOrKey.apply(value, args);
-    //   }
-    // });
-    // return collection;
-
     return _.map(collection, function(value) {
-      return typeof functionOrKey === 'string'? value[functionOrKey].apply(value, args) : functionOrKey.apply(value, args);
+      return typeof functionOrKey === 'string' ? value[functionOrKey].apply(value, args) : functionOrKey.apply(value, args);
     });
   };
 
@@ -436,12 +423,28 @@
   _.sortBy = function(collection, iterator) {
   };
 
+  // Range takes a number an returns an array with values 0 - n minus 1
+  // Cannot customize start, end or step. Always starts a 0 with a step of 1
+  _.range = function(n) {
+    return _.map(new Array(n), function(space, i) {
+      return i;
+    });
+  };
   // Zip together two or more arrays with elements of the same index
   // going together.
   //
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var args = [].slice.call(arguments);
+    var len = _.reduce(args, function(maxLength, item) {
+      return item.length > maxLength ? item.length : maxLength;
+    }, 0);
+    return _.map(_.range(len), function(slot, index) {
+      return _.map(args, function(array) {
+        return array[index];
+      });
+    });
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -449,8 +452,8 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray) {
-    return _.reduce(nestedArray, function(memo, value) {
-      return Array.isArray(value) ? memo.concat(_.flatten(value)) : memo.concat(value);
+    return _.reduce(nestedArray, function(memo, item) {
+      return Array.isArray(item) ? memo.concat(_.flatten(item)) : memo.concat(item);
     }, []);
   };
 
