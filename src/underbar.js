@@ -425,14 +425,9 @@
     // return collection;
 
     return _.map(collection, function(value) {
-      return typeof functionOrKey === 'string'? 
-        value[functionOrKey].apply(value, args): 
-        functionOrKey.apply(value, args)
+      return typeof functionOrKey === 'string'? value[functionOrKey].apply(value, args) : functionOrKey.apply(value, args);
     });
   };
-
-
-
 
   // Sort the object's values by a criterion produced by an iterator.
   // If iterator is a string, sort objects by that property with the name
@@ -453,7 +448,10 @@
   // The new array should contain all elements of the multidimensional array.
   //
   // Hint: Use Array.isArray to check if something is an array
-  _.flatten = function(nestedArray, result) {
+  _.flatten = function(nestedArray) {
+    return _.reduce(nestedArray, function(memo, value) {
+      return Array.isArray(value) ? memo.concat(_.flatten(value)) : memo.concat(value);
+    }, []);
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
